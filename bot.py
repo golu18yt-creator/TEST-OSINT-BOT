@@ -180,5 +180,38 @@ def main():
         time.sleep(1)
 
 
+    # ---------------------------------------------------------
+# FIXED MAIN POLLING LOOP (NO MORE SPAM)
+# ---------------------------------------------------------
+def main():
+    # Start dummy HTTP server thread for Render
+    server_thread = threading.Thread(target=run_dummy_server, daemon=True)
+    server_thread.start()
+
+    print("Bot starting polling loop...")
+
+    # Set initial offset to 0 so we only process fresh updates
+    offset = None
+
+    while True:
+        try:
+            updates = get_updates(offset)
+
+            if updates and updates.get("ok"):
+                results = updates.get("result", [])
+
+                for update in results:
+                    # Update offset BEFORE handling to prevent duplicates if handling crashes
+                    offset = update["update_id"] + 1
+                    handle_message(update)
+
+        except Exception as e:
+            print(f"Polling Exception: {e}")
+
+        # Short pause to prevent hit rate limits
+        time.sleep(0.5)
+
+
 if __name__ == "__main__":
     main()
+    
