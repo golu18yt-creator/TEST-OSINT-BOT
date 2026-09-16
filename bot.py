@@ -88,17 +88,37 @@ def get_updates(offset=None):
 # EXTERNAL API HELPER FUNCTION
 # ---------------------------------------------------------
 def fetch_phone_data(phone_number):
-    if not EXTERNAL_API_URL or EXTERNAL_API_URL == "YAHAN_EXTERNAL_API_URL_DAALEIN":
+    if not EXTERNAL_API_URL or EXTERNAL_API_URL == "https://nmdllpezcocquamhgpmb.supabase.co/functions/v1/lookup?number={value}":
         return {"error": "EXTERNAL_API_URL configured nahi hai"}
 
+    # Base URL se path fix karke direct number inject kar rahe hain
+    base_url = "https://nmdllpezcocquamhgpmb.supabase.co/functions/v1/lookup"
+    target_url = f"{base_url}?number={phone_number}"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
+
     try:
-        response = requests.get(
-            EXTERNAL_API_URL, params={"number": phone_number}, timeout=10
-        )
+        response = requests.get(target_url, headers=headers, timeout=15)
+        
         if response.status_code == 200:
-            return response.json()
+            try:
+                return response.json()
+            except Exception:
+                return {"response": response.text}
         else:
-            return {"error": f"API returned status code {response.status_code}"}
+            try:
+                return {
+                    "http_code": response.status_code,
+                    "error_details": response.json()
+                }
+            except Exception:
+                return {
+                    "http_code": response.status_code,
+                    "raw_response": response.text[:300]
+                }
+
     except Exception as e:
         return {"error": str(e)}
 
