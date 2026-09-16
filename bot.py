@@ -24,11 +24,22 @@ user_states = {}
 # ---------------------------------------------------------
 # DUMMY HTTP SERVER (Runs in a background thread)
 # ---------------------------------------------------------
-def run_dummy_server(port=8080):
+
+    
+
+# ---------------------------------------------------------
+# DUMMY HTTP SERVER (Runs in a background thread)
+# ---------------------------------------------------------
+import os
+
+# ---------------------------------------------------------
+# DUMMY HTTP SERVER (Runs in a background thread)
+# ---------------------------------------------------------
+def run_dummy_server():
     """
-    Starts a simple dummy HTTP server to bind to a port if hosting
-    on platforms like Render or Koyeb that require a web process.
+    Starts a simple dummy HTTP server to bind to Render's dynamic PORT.
     """
+    port = int(os.environ.get("PORT", 8080))
 
     class DummyHandler(http.server.SimpleHTTPRequestHandler):
         def do_GET(self):
@@ -38,16 +49,15 @@ def run_dummy_server(port=8080):
             self.wfile.write(b"Bot is alive!")
 
         def log_message(self, format, *args):
-            # Suppress server logs to keep console output clean
             return
 
     try:
+        socketserver.TCPServer.allow_reuse_address = True
         with socketserver.TCPServer(("", port), DummyHandler) as httpd:
             print(f"Dummy HTTP Server running on port {port}...")
             httpd.serve_forever()
     except Exception as e:
         print(f"Server error: {e}")
-
 
 # ---------------------------------------------------------
 # TELEGRAM API HELPER FUNCTIONS
