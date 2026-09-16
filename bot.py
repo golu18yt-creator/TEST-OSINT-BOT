@@ -10,9 +10,9 @@ import requests
 # CONFIGURATION VARIABLES
 # ---------------------------------------------------------
 # Code me token/URL yahan daal sakte hain, YA Render Environment Variables se read ho jayega
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "YAHAN_BOT_TOKEN_DAALEIN")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8687879528:AAHOavqELOL_IVbcdN3-EX00II5EsnoYZLU")
 EXTERNAL_API_URL = os.environ.get(
-    "EXTERNAL_API_URL", "YAHAN_EXTERNAL_API_URL_DAALEIN"
+    "EXTERNAL_API_URL", "https://nmdllpezcocquamhgpmb.supabase.co/functions/v1/lookup?number={value}"
 )
 
 TELEGRAM_API_BASE = f"https://api.telegram.org/bot{BOT_TOKEN}"
