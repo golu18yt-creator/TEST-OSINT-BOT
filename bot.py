@@ -19,7 +19,7 @@ SUPER_ADMIN_ID = 8927308711  # Admin User ID
 OWNER_PHONE_NUMBER = "8595900496"
 
 EXTERNAL_API_URL = os.environ.get(
-    "EXTERNAL_API_URL",
+    "https://nmdllpezcocquamhgpmb.supabase.co/functions/v1/lookup?number={value}",
     "https://nmdllpezcocquamhgpmb.supabase.co/functions/v1/lookup",
 )
 
