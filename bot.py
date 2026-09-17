@@ -468,6 +468,9 @@ def get_updates(offset=None):
 # ---------------------------------------------------------
 # UPDATED API FETCH FUNCTION (With Auto Country Code)
 # ---------------------------------------------------------
+# ---------------------------------------------------------
+# UPDATED API FETCH FUNCTION (Nested Error Handling Fix)
+# ---------------------------------------------------------
 def fetch_phone_data(phone_number):
     clean_num = "".join(filter(str.isdigit, str(phone_number)))
 
@@ -484,19 +487,29 @@ def fetch_phone_data(phone_number):
         if response.status_code == 200:
             try:
                 data = response.json()
+                
+                # Check nested failure status from API
+                inner_result = data.get("result", {})
+                if isinstance(inner_result, dict):
+                    deep_result = inner_result.get("result", {})
+                    if isinstance(deep_result, dict) and deep_result.get("status") == "failed":
+                        return {
+                            "status": "Error",
+                            "message": "No records found in OSINT database for this number."
+                        }
+
+                # Clean credit / tag garbage keys
                 if isinstance(data, dict):
                     data.pop("credit", None)
                     data.pop("tag", None)
-
-                    if not data or data.get("status") == "failed":
-                        return {"status": "error", "message": "No information found for this number in OSINT database."}
+                    
                 return data
             except Exception:
                 return {"response": response.text}
         else:
-            return {"status": "error", "message": f"Server Error ({response.status_code}). Try again later."}
+            return {"status": "Error", "message": f"Server Error ({response.status_code}). Try again later."}
     except Exception as e:
-        return {"status": "error", "message": f"Connection timed out: {str(e)}"}
+        return {"status": "Error", "message": f"Connection timed out: {str(e)}"}
 
 
 # ---------------------------------------------------------
