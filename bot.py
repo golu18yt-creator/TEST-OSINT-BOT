@@ -454,7 +454,9 @@ def fetch_phone_data(phone_number):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 
     try:
+        # Timeout 5 sec set kar diya hai taki bot stuck na ho
         response = requests.get(target_url, headers=headers, timeout=5)
+        
         if response.status_code == 200:
             try:
                 return response.json()
@@ -463,17 +465,16 @@ def fetch_phone_data(phone_number):
         else:
             return {
                 "error": True,
-                "message": f"Server responded with status code {response.status_code}",
+                "message": f"Server responded with status code {response.status_code}"
             }
+            
     except requests.exceptions.Timeout:
-        return {
-            "error": True,
-            "message": "⏱️ API Server Timeout! Response took too long.",
-        }
+        return {"error": True, "message": "⏱️ API Server Timeout! Response took too long."}
     except requests.exceptions.RequestException as e:
         return {"error": True, "message": f"⚠️ Connection Error: {str(e)}"}
     except Exception as e:
         return {"error": True, "message": f"❌ Unknown Error: {str(e)}"}
+    
 
 
 # ---------------------------------------------------------
